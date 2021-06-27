@@ -36,23 +36,24 @@
     </TableLayout>
 
     <ImageView
-        android:id="@+id/imageView2"
+        android:id="@+id/Main_foto"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="50dp"
         app:srcCompat="@drawable/ic_imv" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/btn_tomarFoto"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="15dp"
         android:backgroundTint="@color/blue"
         android:text="Tomar foto"
-        app:cornerRadius="20dp" />
+        app:cornerRadius="20dp"
+        android:onClick="tomarFoto"/>
 
     <Button
-        android:id="@+id/button2"
+        android:id="@+id/btn_seleccionarDeGaleria"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="15dp"
@@ -61,7 +62,7 @@
         app:cornerRadius="20dp" />
 
     <Button
-        android:id="@+id/button3"
+        android:id="@+id/btn_confirmar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="15dp"
