@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">Investigacion_camara</string>
+    <string name="campo_vacio">Este campo es requerido</string>
+</resources>
