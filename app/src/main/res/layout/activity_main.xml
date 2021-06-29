@@ -36,14 +36,14 @@
     </TableLayout>
 
     <ImageView
-        android:id="@+id/imageView2"
+        android:id="@+id/Main_foto"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="50dp"
         app:srcCompat="@drawable/ic_imv" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/btn_tomarFoto"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="15dp"
