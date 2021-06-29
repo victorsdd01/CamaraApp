@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
                 File imagenArchivo = null;
                 try {
                     imagenArchivo=createImageFile();
-                }catch (Exception e){}
+                }catch (Exception e){Toast.makeText(getApplicationContext(),"error,en imagenArchivo",Toast.LENGTH_LONG).show();}
 
                 if(imagenArchivo !=null){
                     Uri fotoUri = FileProvider.getUriForFile(this,"com.example.investigacion_camara",imagenArchivo);
