@@ -24,9 +24,6 @@
                 android:resource="@xml/file_paths"></meta-data>
         </provider>
 
-        <activity android:name=".Splash_Activities.SplashSuccsses"></activity>
-        <activity android:name=".CrearUsuario" />
-        <activity android:name=".Login" />
         <activity android:name=".Splash_Activities.SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

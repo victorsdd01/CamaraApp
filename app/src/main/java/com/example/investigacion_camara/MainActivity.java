@@ -29,8 +29,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 public class MainActivity extends AppCompatActivity {
-
-
+    
     private static final int IMAGE_CAPTURE_CODE = 1001;
     private static final int PERMISSION_CODE = 1000;
     private static final int PICK_IMAGE =1002;
