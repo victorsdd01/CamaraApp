@@ -16,6 +16,16 @@
         android:text="Tomar foto"
         app:cornerRadius="20dp" />
 
+    <Button
+        android:id="@+id/btn_openGallery"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="15dp"
+        android:backgroundTint="@color/blue"
+        android:onClick="openGallery"
+        android:text="galeria"
+        app:cornerRadius="20dp" />
+
     <ImageView
         android:id="@+id/Main_foto"
         android:layout_width="match_parent"

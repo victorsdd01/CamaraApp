@@ -1,14 +1,20 @@
 package com.example.investigacion_camara;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.FileProvider;
 
+import android.Manifest;
 import android.content.ActivityNotFoundException;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
@@ -25,16 +31,25 @@ import java.util.Date;
 public class MainActivity extends AppCompatActivity {
 
 
+    private static final int IMAGE_CAPTURE_CODE = 1001;
+    private static final int PERMISSION_CODE = 1000;
+    private static final int PICK_IMAGE =1002;
     ImageView foto;
     Button btn_tomarFoto;
+
+    /*
     static final int REQUEST_IMAGE_CAPTURE = 1;
     String RutaImagen;
+    */
+
+     Uri uriImagen;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         IniciarController();
     }
+
     private void IniciarController(){
         try {
             foto=(ImageView)findViewById(R.id.Main_foto);
@@ -50,6 +65,68 @@ public class MainActivity extends AppCompatActivity {
 
     }// llave del metodo controller...
 
+    public void tomarFoto(){
+        if (Build.VERSION.SDK_INT>=Build.VERSION_CODES.M){
+            if (checkSelfPermission(Manifest.permission.CAMERA)== PackageManager.PERMISSION_DENIED || checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE)==PackageManager.PERMISSION_DENIED){
+                String[] permisos={Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+                requestPermissions(permisos,PERMISSION_CODE);
+            }
+            else{
+                openCamera();
+            }
+        }
+        else{
+            openCamera();
+        }
+    }// llave del metodo....
+
+    private void openCamera() {
+        ContentValues values=new ContentValues();
+        values.put(MediaStore.Images.Media.TITLE,"Imagen Nueva");
+        values.put(MediaStore.Images.Media.DESCRIPTION,"Tomada desde la camara");
+        uriImagen=getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI,values);
+
+        Intent i=new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        i.putExtra(MediaStore.EXTRA_OUTPUT,uriImagen);
+        startActivityForResult(i,IMAGE_CAPTURE_CODE);
+    }
+
+    public void openGallery(View view) throws IOException {
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(Intent.createChooser(intent, "Select Picture"), PICK_IMAGE);
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case PERMISSION_CODE: {
+                if (grantResults.length > 1 && grantResults[1] == PackageManager.PERMISSION_GRANTED) {
+                    openCamera();
+                } else {
+                    Toast.makeText(this, "Permiso denegado", Toast.LENGTH_LONG).show();
+                }
+            }
+        }
+    }
+
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK && requestCode == IMAGE_CAPTURE_CODE) {
+            foto.setImageURI(uriImagen);
+        } else if (resultCode == RESULT_OK && requestCode == PICK_IMAGE){
+            uriImagen = data.getData();
+            foto.setImageURI(uriImagen);
+            Toast.makeText(this, "Foto desde la GALERIA", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+
+    /*
     //este metodo toma la foto....
     private void tomarFoto() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
@@ -124,7 +201,7 @@ public class MainActivity extends AppCompatActivity {
         mediaScanIntent.setData(contentUri);
         this.sendBroadcast(mediaScanIntent);
     }
-
+    */
 
 
 }// lave de la clase
