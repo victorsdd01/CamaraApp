@@ -7,6 +7,7 @@ import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -27,7 +28,7 @@ public class MainActivity extends AppCompatActivity {
     ImageView foto;
     Button btn_tomarFoto;
     static final int REQUEST_IMAGE_CAPTURE = 1;
-    String currentPhotoPath;
+    String RutaImagen;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,8 +54,19 @@ public class MainActivity extends AppCompatActivity {
     private void tomarFoto() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         try {
-            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+            if(takePictureIntent.resolveActivity(getPackageManager())!= null){
+                File imagenArchivo = null;
+                try {
+                    imagenArchivo=createImageFile();
+                }catch (Exception e){}
 
+                if(imagenArchivo !=null){
+                    Uri fotoUri = FileProvider.getUriForFile(this,"com.example.investigacion_camara",imagenArchivo);
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,fotoUri);
+                    startActivityForResult(takePictureIntent,REQUEST_IMAGE_CAPTURE);
+                }
+
+            }else{Toast.makeText(getApplicationContext(),"error, tu dispositivo no tiene camara",Toast.LENGTH_LONG).show();}
         } catch (ActivityNotFoundException e) {
             Toast.makeText(getApplicationContext(),"error al tomar la foto",Toast.LENGTH_LONG).show();
         }
@@ -64,52 +76,50 @@ public class MainActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_IMAGE_CAPTURE && resultCode == RESULT_OK) {
-            Bundle extras = data.getExtras();
-            Bitmap imageBitmap = (Bitmap) extras.get("data");
+            //Bundle extras = data.getExtras();
+            Bitmap imageBitmap = BitmapFactory.decodeFile(RutaImagen);//(Bitmap) extras.get("data");
             foto.setImageBitmap(imageBitmap);
         }
     }
     //este metodo crea un backup de las images...
     private File createImageFile() throws IOException {
         // Create an image file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "Backup_" + timeStamp + "_";
-        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-        File image = File.createTempFile(
-                imageFileName,
-                ".jpg",
-                storageDir
-        );
+        //String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "foto_";
+        File Directorio = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(imageFileName, ".jpg",Directorio);
 
         // Save a file: path for use with ACTION_VIEW intents
-        currentPhotoPath = image.getAbsolutePath();
+        RutaImagen = image.getAbsolutePath();
         return image;
     }
     private void dispatchTakePictureIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         // Ensure that there's a camera activity to handle the intent
-        if (takePictureIntent.resolveActivity(getPackageManager()) != null) {
+        if (takePictureIntent.resolveActivity(getPackageManager()) != null) { // esta es la condicion que valida si el dispositivo tiene camara...
             // Create the File where the photo should go
             File photoFile = null;
             try {
                 photoFile = createImageFile();
             } catch (IOException ex) {
-                // Error occurred while creating the File
+               Toast.makeText(getApplicationContext(),"Error photoFile=null",Toast.LENGTH_LONG).show();
 
             }
             // Continue only if the File was successfully created
             if (photoFile != null) {
-                Uri photoURI = FileProvider.getUriForFile(this,
-                        "com.example.investigacion_camara.fileprovider",
-                        photoFile);
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+                try {
+                    Uri photoURI = FileProvider.getUriForFile(this,
+                            "com.example.investigacion_camara.fileprovider",
+                            photoFile);
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                    startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE);
+                }catch (Exception e){Toast.makeText(getApplicationContext(),"Error photoFile != null",Toast.LENGTH_LONG).show();}
             }
         }
     }
     private void galleryAddPic() {
         Intent mediaScanIntent = new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE);
-        File f = new File(currentPhotoPath);
+        File f = new File(RutaImagen);
         Uri contentUri = Uri.fromFile(f);
         mediaScanIntent.setData(contentUri);
         this.sendBroadcast(mediaScanIntent);

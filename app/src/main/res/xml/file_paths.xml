@@ -2,6 +2,6 @@
 
 <path xmlns:android="http://schemas.android.com/apk/res/android">
        <external-path
-           name="My_images"
-           path="Android/data/com.example.investigacion_camara/camaraApp/fotos"/>
+           name="mis_imagenes"
+           path="."></external-path>
 </path>
